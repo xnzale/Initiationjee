@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_initiationjee" default="compile.module.initiationjee">
+  <dirname property="module.initiationjee.basedir" file="${ant.file.module_initiationjee}"/>
+  
+  <property name="module.jdk.home.initiationjee" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.initiationjee" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.initiationjee" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.initiationjee" value="-encoding UTF-8 -source 7 -target 1.7 ${compiler.args}"/>
+  
+  <property name="initiationjee.output.dir" value="${module.initiationjee.basedir}/target/classes"/>
+  <property name="initiationjee.testoutput.dir" value="${module.initiationjee.basedir}/target/test-classes"/>
+  
+  <path id="initiationjee.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="initiationjee.module.production.classpath">
+    <path refid="${module.jdk.classpath.initiationjee}"/>
+    <path refid="library.maven:_javax.servlet:javax.servlet-api:3.1.0.classpath"/>
+  </path>
+  
+  <path id="initiationjee.runtime.production.module.classpath">
+    <pathelement location="${initiationjee.output.dir}"/>
+  </path>
+  
+  <path id="initiationjee.module.classpath">
+    <path refid="${module.jdk.classpath.initiationjee}"/>
+    <pathelement location="${initiationjee.output.dir}"/>
+    <path refid="library.maven:_junit:junit:4.11.classpath"/>
+    <path refid="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath"/>
+    <path refid="library.maven:_javax.servlet:javax.servlet-api:3.1.0.classpath"/>
+  </path>
+  
+  <path id="initiationjee.runtime.module.classpath">
+    <pathelement location="${initiationjee.testoutput.dir}"/>
+    <pathelement location="${initiationjee.output.dir}"/>
+    <path refid="library.maven:_junit:junit:4.11.classpath"/>
+    <path refid="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath"/>
+    <path refid="library.maven:_javax.servlet:javax.servlet-api:3.1.0.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.initiationjee">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.initiationjee">
+    <patternset refid="excluded.from.module.initiationjee"/>
+  </patternset>
+  
+  <path id="initiationjee.module.sourcepath">
+    <dirset dir="${module.initiationjee.basedir}">
+      <include name="src/main/resources"/>
+      <include name="src/main/java"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.initiationjee" depends="compile.module.initiationjee.production,compile.module.initiationjee.tests" description="Compile module initiationJee"/>
+  
+  <target name="compile.module.initiationjee.production" depends="register.custom.compilers" description="Compile module initiationJee; production classes">
+    <mkdir dir="${initiationjee.output.dir}"/>
+    <javac2 destdir="${initiationjee.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.initiationjee}/javac">
+      <compilerarg line="${compiler.args.initiationjee}"/>
+      <bootclasspath refid="initiationjee.module.bootclasspath"/>
+      <classpath refid="initiationjee.module.production.classpath"/>
+      <src refid="initiationjee.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.initiationjee"/>
+    </javac2>
+    
+    <copy todir="${initiationjee.output.dir}">
+      <fileset dir="${module.initiationjee.basedir}/src/main/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.initiationjee.basedir}/src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.initiationjee.tests" depends="register.custom.compilers,compile.module.initiationjee.production" description="compile module initiationJee; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.initiationjee" description="cleanup module">
+    <delete dir="${initiationjee.output.dir}"/>
+    <delete dir="${initiationjee.testoutput.dir}"/>
+  </target>
+</project>
